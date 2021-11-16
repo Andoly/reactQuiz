@@ -2,11 +2,13 @@ import styles from "./global.module.css";
 import { useState, useMemo, useEffect } from "react";
 import Trivia from "../src/components/Trivia";
 import Timer from "./components/Timer";
+import Start from "./components/Start";
 
 function App() {
   const [questionNumber, setQuestionNumber] = useState(1);
   const [timeOut, setTimeOut] = useState(false);
   const [earned, setEarned] = useState("$ 0");
+  const [username, setUsername] = useState(null);
 
   const questions = [
     {
@@ -106,48 +108,56 @@ function App() {
 
   return (
     <div className={styles.app}>
-      <div className={styles.main}>
-        {timeOut ? (
-          <h1 className={styles.endText}>You earned: {earned}</h1>
-        ) : (
-          <>
-            <div className={styles.top}>
-              <div className={styles.timer}>
-                <Timer
-                  handleSetTimeOut={setTimeOut}
-                  questionNumber={questionNumber}
-                />
-              </div>
-            </div>
-            <div className={styles.bottom}>
-              <Trivia
-                data={questions}
-                handleSetTimeOut={setTimeOut}
-                questionNumber={questionNumber}
-                handleSetQuestionNumber={setQuestionNumber}
-              />
-            </div>
-          </>
-        )}
-      </div>
+      {!username ? (
+        <Start handleUsername={setUsername} />
+      ) : (
+        <>
+          <div className={styles.main}>
+            {timeOut ? (
+              <h1 className={styles.endText}>You earned: {earned}</h1>
+            ) : (
+              <>
+                <div className={styles.top}>
+                  <div className={styles.timer}>
+                    <Timer
+                      handleSetTimeOut={setTimeOut}
+                      questionNumber={questionNumber}
+                    />
+                  </div>
+                </div>
+                <div className={styles.bottom}>
+                  <Trivia
+                    data={questions}
+                    handleSetTimeOut={setTimeOut}
+                    questionNumber={questionNumber}
+                    handleSetQuestionNumber={setQuestionNumber}
+                  />
+                </div>
+              </>
+            )}
+          </div>
 
-      <div className={styles.pyramid}>
-        <ul className={styles.moneyList}>
-          {moneyPyramid.map((item) => (
-            <li
-              key={item.id}
-              className={
-                questionNumber === item.id
-                  ? styles.moneyListItem + " " + styles.active
-                  : styles.moneyListItem
-              }
-            >
-              <span className={styles.moneyListItemNumber}>{item.id}</span>
-              <span className={styles.moneyListItemAmount}>{item.amount}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
+          <div className={styles.pyramid}>
+            <ul className={styles.moneyList}>
+              {moneyPyramid.map((item) => (
+                <li
+                  key={item.id}
+                  className={
+                    questionNumber === item.id
+                      ? styles.moneyListItem + " " + styles.active
+                      : styles.moneyListItem
+                  }
+                >
+                  <span className={styles.moneyListItemNumber}>{item.id}</span>
+                  <span className={styles.moneyListItemAmount}>
+                    {item.amount}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </>
+      )}
     </div>
   );
 }
