@@ -1,10 +1,12 @@
 import styles from "./global.module.css";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Trivia from "../src/components/Trivia";
+import Timer from "./components/Timer";
 
 function App() {
   const [questionNumber, setQuestionNumber] = useState(1);
   const [timeOut, setTimeOut] = useState(false);
+  const [earned, setEarned] = useState("$ 0");
 
   const questions = [
     {
@@ -97,20 +99,36 @@ function App() {
     []
   );
 
+  useEffect(() => {
+    questionNumber > 1 &&
+      setEarned(moneyPyramid.find((m) => m.id === questionNumber - 1).amount);
+  }, [questionNumber, moneyPyramid]);
+
   return (
     <div className={styles.app}>
       <div className={styles.main}>
-        <div className={styles.top}>
-          <div className={styles.timer}>30</div>
-        </div>
-        <div className={styles.bottom}>
-          <Trivia
-            data={questions}
-            handleSetTimeOut={setTimeOut}
-            questionNumber={questionNumber}
-            handleSetQuestionNumber={setQuestionNumber}
-          />
-        </div>
+        {timeOut ? (
+          <h1 className={styles.endText}>You earned: {earned}</h1>
+        ) : (
+          <>
+            <div className={styles.top}>
+              <div className={styles.timer}>
+                <Timer
+                  handleSetTimeOut={setTimeOut}
+                  questionNumber={questionNumber}
+                />
+              </div>
+            </div>
+            <div className={styles.bottom}>
+              <Trivia
+                data={questions}
+                handleSetTimeOut={setTimeOut}
+                questionNumber={questionNumber}
+                handleSetQuestionNumber={setQuestionNumber}
+              />
+            </div>
+          </>
+        )}
       </div>
 
       <div className={styles.pyramid}>
